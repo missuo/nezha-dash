@@ -20,11 +20,6 @@ interface TimeState {
   ss: number
 }
 
-interface CustomLink {
-  link: string
-  name: string
-}
-
 const useCurrentTime = () => {
   const [time, setTime] = useState<TimeState>({
     hh: DateTime.now().setLocale("en-US").hour,
@@ -48,29 +43,6 @@ const useCurrentTime = () => {
   return time
 }
 
-const Links = memo(function Links() {
-  const linksEnv = getEnv("NEXT_PUBLIC_Links")
-  const links: CustomLink[] | null = linksEnv ? JSON.parse(linksEnv) : null
-
-  if (!links) return null
-
-  return (
-    <div className="flex items-center gap-2">
-      {links.map((link) => (
-        <a
-          key={link.link}
-          href={link.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1 font-medium text-sm opacity-50 transition-opacity hover:opacity-100"
-        >
-          {link.name}
-        </a>
-      ))}
-    </div>
-  )
-})
-
 const Overview = memo(function Overview() {
   const t = useTranslations("Overview")
   const time = useCurrentTime()
@@ -82,21 +54,21 @@ const Overview = memo(function Overview() {
 
   return (
     <section className={"mt-10 flex flex-col md:mt-16"}>
-      <p className="font-semibold text-base">{t("p_2277-2331_Overview")}</p>
-      <div className="flex items-center gap-1">
-        <p className="font-medium text-sm opacity-50">{t("p_2390-2457_wherethetimeis")}</p>
+      <div className="flex items-center gap-1.5">
+        <p className="text-sm font-medium opacity-50">{t("p_2390-2457_wherethetimeis")}</p>
         {mounted ? (
-          <div className="flex items-center font-medium text-sm">
+          <div
+            className="flex text-lg font-medium mt-0.5"
+            style={{ fontVariantNumeric: "tabular-nums" }}
+          >
             <AnimateCountClient count={time.hh} minDigits={2} />
-            <span className="mb-px font-medium text-sm opacity-50">:</span>
+            <span className="opacity-50">:</span>
             <AnimateCountClient count={time.mm} minDigits={2} />
-            <span className="mb-px font-medium text-sm opacity-50">:</span>
-            <span className="font-medium text-sm">
-              <AnimateCountClient count={time.ss} minDigits={2} />
-            </span>
+            <span className="opacity-50">:</span>
+            <AnimateCountClient count={time.ss} minDigits={2} />
           </div>
         ) : (
-          <Skeleton className="h-[21px] w-16 animate-none rounded-[5px] bg-muted-foreground/10" />
+          <Skeleton className="h-[28px] w-20 animate-none rounded-[5px] bg-muted-foreground/10" />
         )}
       </div>
     </section>
@@ -148,18 +120,12 @@ function Header() {
         </button>
         <section className="flex items-center gap-2">
           <DriverBadge />
-          <div className="hidden sm:block">
-            <Links />
-          </div>
           <NetworkButton />
           <SearchButton />
           <LanguageSwitcher />
           <ModeToggle />
         </section>
       </section>
-      <div className="mt-1 flex w-full justify-end sm:hidden">
-        <Links />
-      </div>
       <Overview />
     </div>
   )
